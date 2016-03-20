@@ -1,24 +1,41 @@
 package Graph;
 
 import Graph.Node;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import Graph.Edge;
 
 public class Graph {
 	public Node[] nodes;
-	public Edge[] edges;
+	
+	public void createGraph(int size, double[][] costMatrix, double[][]relMatrix){
+		this.nodes = new Node[size];
+		for(int i=0; i < size; i++){
+			//using index in matrices as the key for the nodes (using zero indexing)
+			//ie cost at index 4,7 is the cost of bidirectional edge from node 4 to node 7
+			this.nodes[i] = new Node(i);
+		}
+		
+		int row = 0;
+		int col = 0;
+		while(row < size){
+			while(col < size){
+				if(row == col){
+					col++;
+					continue;
+				}
+				Edge newEdge = new Edge(this.nodes[row], this.nodes[col]);
+				newEdge.setCost(costMatrix[row][col]);
+				newEdge.setReliability(relMatrix[row][col]);
+				this.nodes[row].addEdge(newEdge);
+				this.nodes[col].addEdge(newEdge);
+				System.out.println("Adding edge from node" + row + " to node" + col + " with R=" + relMatrix[row][col] + " and C=" + costMatrix[row][col]);
+				col++;
+			}
+			row++;
+			col = row;
+		}
+	}
 
-	public void createGraph(){
+	/*public void createGraph(){
 		Map<Integer, Node> nodeMap = new HashMap<Integer, Node>();
 		ArrayList<Node> tempNodes = new ArrayList<Node>();
 		ArrayList<Edge> tempEdges = new ArrayList<Edge>();
@@ -94,5 +111,5 @@ public class Graph {
 			}
 			System.out.println("\n");
 		}*/
-	}
+	//}
 }

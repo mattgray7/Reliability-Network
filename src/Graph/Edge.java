@@ -5,12 +5,28 @@ import Graph.Node;
 public class Edge {
     private Node from;
     private Node to;
-    private int link_speed; // in Mbps
+    private double cost;
+    private double reliability;
     
-    public Edge(Node from, Node to, int link_speed) {
+    public Edge(Node from, Node to) {
         this.from = from;
         this.to = to;
-        this.link_speed = link_speed;
+    }
+    
+    public void setCost(double cost){
+    	this.cost = cost;
+    }
+    
+    public double getCost(){
+    	return this.cost;
+    }
+    
+    public void setReliability(double reliability){
+    	this.reliability = reliability;
+    }
+    
+    public double getReliability(){
+    	return this.reliability;
     }
     
     public Node getFrom() {
@@ -27,13 +43,5 @@ public class Edge {
 
     public void setTo(Node to) {
         this.to = to;
-    }
-
-    public double getLink_speed() {
-        return link_speed;
-    }
-
-    public void setLink_speed(int link_speed) {
-        this.link_speed = link_speed;
     }
 }

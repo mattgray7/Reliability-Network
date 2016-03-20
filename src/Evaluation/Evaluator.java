@@ -1,5 +1,6 @@
 package Evaluation;
 
+import Graph.Graph;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedReader;
@@ -14,6 +15,7 @@ public class Evaluator {
 	public static double relLimit;
 	public static int costLimit;
 	public static String INPUT_FILE = "Prj1_input.txt";
+	public static Graph graph;
 
 	public static void main(String[] args) {
 		try{
@@ -21,6 +23,9 @@ public class Evaluator {
 		}catch(Exception e){
 			System.out.println(e);
 		}
+		
+		graph = new Graph();
+		graph.createGraph(N, costMatrix, relMatrix);
 		
 	}
 	
@@ -71,10 +76,6 @@ public class Evaluator {
 				//relLimit = 0;
 			}
 		}
-		System.out.println("\nN IS " + N);
-		System.out.println("a_b IS " + problemType);
-		System.out.println("relLimit IS " + relLimit);
-		System.out.println("costLimit IS " + costLimit);
 	}
 	
 	public static double[][] convertListToMatrix(String input, String prefix){
@@ -102,6 +103,8 @@ public class Evaluator {
 				col++;
 			}
 			row++;
+			
+			//set col to next row index so that only upper diagonal gets filled
 			col=row;
 		}
 		return retMatrix;
