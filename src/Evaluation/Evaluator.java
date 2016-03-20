@@ -14,7 +14,7 @@ public class Evaluator {
 	public static int problemType;
 	public static double relLimit;
 	public static int costLimit;
-	public static String INPUT_FILE = "Prj1_input.txt";
+	public static String INPUT_FILE = "test_input.txt"; //"Prj1_input.txt";
 	public static Graph graph;
 
 	public static void main(String[] args) {
@@ -26,7 +26,8 @@ public class Evaluator {
 		
 		graph = new Graph();
 		graph.createGraph(N, costMatrix, relMatrix);
-		
+		Algorithms algorithms = new Algorithms();
+		algorithms.primsMinCost(graph).printGraph();
 	}
 	
 	public static void loadInputFile() throws IOException{
