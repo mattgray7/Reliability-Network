@@ -1,17 +1,28 @@
 package Graph;
 
-import Graph.Node;
-import Graph.Edge;
+import Graph.*;
+import java.util.*;
 
 public class Graph {
-	public Node[] nodes;
+	public ArrayList<Node> nodes;
+	public ArrayList<Edge> edges;
+	public double totalCost;
+	public double totalReliability;
+	public ArrayList<Edge> remainingEdges;
 	
+	public Graph() {
+	    this.nodes = new ArrayList<Node>();
+	    this.edges = new ArrayList<Edge>();
+	    this.remainingEdges = new ArrayList<Edge>();
+	    this.totalCost = 0;
+	    this.totalReliability = 1.0;
+	}
+
 	public void createGraph(int size, double[][] costMatrix, double[][]relMatrix){
-		this.nodes = new Node[size];
 		for(int i=0; i < size; i++){
 			//using index in matrices as the key for the nodes (using zero indexing)
 			//ie cost at index 4,7 is the cost of bidirectional edge from node 4 to node 7
-			this.nodes[i] = new Node(i);
+			this.nodes.add(new Node(i));
 		}
 		
 		int row = 0;
@@ -22,17 +33,41 @@ public class Graph {
 					col++;
 					continue;
 				}
-				Edge newEdge = new Edge(this.nodes[row], this.nodes[col]);
+				Edge newEdge = new Edge(this.nodes.get(row), this.nodes.get(col));
 				newEdge.setCost(costMatrix[row][col]);
 				newEdge.setReliability(relMatrix[row][col]);
-				this.nodes[row].addEdge(newEdge);
-				this.nodes[col].addEdge(newEdge);
+				newEdge.setFrom(this.nodes.get(row));
+				newEdge.setTo(this.nodes.get(col));
+				edges.add(newEdge);
 				System.out.println("Adding edge from node" + row + " to node" + col + " with R=" + relMatrix[row][col] + " and C=" + costMatrix[row][col]);
 				col++;
 			}
 			row++;
 			col = row;
 		}
+	}
+	
+	public void addNode(Node newNode) {
+	    nodes.add(newNode);
+	}
+	
+	public void addEdge(Edge newEdge) {
+	    edges.add(newEdge);
+	    totalCost += newEdge.getCost();
+	    totalReliability *= newEdge.getReliability();
+	}
+	
+	public void printGraph() {
+	    System.out.println("Nodes:");
+	    for (int i = 0; i < nodes.size(); i++) {
+	        System.out.println(nodes.get(i).key);
+	    }
+	    System.out.println("Edges:");
+        for (int i = 0; i < edges.size(); i++) {
+            System.out.println("Edge from " + edges.get(i).getFrom().key + " to " + edges.get(i).getTo().key + " with cost " + edges.get(i).getCost() + " and reliability " + edges.get(i).getReliability());
+        }
+        System.out.println("Cost: " + totalCost);
+        System.out.println("Reliability: " + totalReliability);
 	}
 
 	/*public void createGraph(){
