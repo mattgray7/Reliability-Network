@@ -10,25 +10,37 @@ public class Algorithms {
     };
     
     public void sortCostThenReliability(ArrayList<Edge> input) {
-        quickSort(input, 0, input.size() - 1);
+        quickSort(input, 0, input.size() - 1, true);
     }
     
-    private void quickSort(ArrayList<Edge> input, int left, int right) {
+    public void sortReliabilityThenCost(ArrayList<Edge> input) {
+        quickSort(input, 0, input.size() - 1, false);
+    }
+    
+    private void quickSort(ArrayList<Edge> input, int left, int right, boolean costFirst) {
         int p;
         if (left < right) {
-            p = partition(input, left, right);
-            quickSort(input, left, p - 1);
-            quickSort(input, p + 1, right);
+            p = partition(input, left, right, costFirst);
+            quickSort(input, left, p - 1, costFirst);
+            quickSort(input, p + 1, right, costFirst);
         }
     }
     
-    private int partition(ArrayList<Edge> input, int left, int right) {
+    private boolean costFirstComparison(Edge pivot, Edge comparedTo) {
+        return (comparedTo.getCost() < pivot.getCost() || 
+                (comparedTo.getCost() == pivot.getCost() && comparedTo.getReliability() > pivot.getReliability()));
+    }
+    private boolean reliabilityFirstComparison(Edge pivot, Edge comparedTo) {
+        return (comparedTo.getReliability() > pivot.getReliability() || 
+                (comparedTo.getReliability() == pivot.getReliability() && comparedTo.getCost() < pivot.getCost()));
+    }
+    
+    private int partition(ArrayList<Edge> input, int left, int right, boolean costFirst) {
         Edge pivot = input.get(right);
         Edge temp;
         
         for (int i = left; i < right; i++) {
-            if (input.get(i).getCost() < pivot.getCost() || 
-                       (input.get(i).getCost() == pivot.getCost() && input.get(i).getReliability() > pivot.getReliability())) {
+            if ((costFirst && costFirstComparison(pivot, input.get(i))) || !costFirst && reliabilityFirstComparison(pivot, input.get(i))) {
                 temp = input.get(i);
                 input.set(i, input.get(left));
                 input.set(left, temp);
@@ -42,12 +54,16 @@ public class Algorithms {
         return left;
     }
 
-    public Graph primsMinCost(Graph input) {
+    public Graph prims(Graph input, boolean minCost) {
         boolean[] visited = new boolean[input.nodes.size()];
         Graph mst = new Graph();
         input.remainingEdges = new ArrayList<Edge>(input.edges);
         
-        sortCostThenReliability(input.edges);
+        if (minCost) {
+            sortCostThenReliability(input.edges);
+        } else {
+            sortReliabilityThenCost(input.edges);
+        }
         
         mst.addNode(input.edges.get(0).getFrom());
         visited[input.edges.get(0).getFrom().key] = true;

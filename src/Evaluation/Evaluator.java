@@ -27,7 +27,8 @@ public class Evaluator {
 		graph = new Graph();
 		graph.createGraph(N, costMatrix, relMatrix);
 		Algorithms algorithms = new Algorithms();
-		algorithms.primsMinCost(graph).printGraph();
+		boolean minCost = false;
+		algorithms.prims(graph, minCost).printGraph();
 	}
 	
 	public static void loadInputFile() throws IOException{
