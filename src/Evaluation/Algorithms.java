@@ -201,31 +201,36 @@ public class Algorithms {
     
     public Graph augmentToCostConstraint(Graph input, double costConstraint){
     	Graph minCost = prims(input, true);
-        if (minCost.totalReliability > costConstraint){
+        if (minCost.totalCost > costConstraint){
         	System.out.println("Min cost tree is over cost limit");
             return minCost;
         }
         
-        minCost.printGraph();
-        int edgeIndex = 0;
+        ArrayList<Edge> parallelizableEdges = new ArrayList<Edge>();
+        for (int i = 0; i < minCost.edges.size(); i++) {
+            parallelizableEdges.add(minCost.edges.get(i));
+        }
+        
         // int remainingEdgeIndex = 0;
         double reliabilityFactor;
         double costChange;
         sortReliabilityOverCost(minCost.edges);
-        while (edgeIndex < minCost.edges.size()) {
-            if ((minCost.edges.get(edgeIndex).isParallelizable()) && 
-            	((minCost.totalCost + minCost.edges.get(edgeIndex).getCost()) <= costConstraint)) {
-                reliabilityFactor = 1 / minCost.edges.get(edgeIndex).getReliability();
-                costChange = minCost.edges.get(edgeIndex).getCost() * -1;
-                minCost.edges.get(edgeIndex).parallelize();
-                costChange += minCost.edges.get(edgeIndex).getCost();
-                reliabilityFactor *= minCost.edges.get(edgeIndex).getReliability();
+        while (!parallelizableEdges.isEmpty()) {
+            if ((parallelizableEdges.get(0).isParallelizable()) && 
+            	((minCost.totalCost + parallelizableEdges.get(0).getCost()) <= costConstraint)) {
+                reliabilityFactor = 1 / parallelizableEdges.get(0).getReliability();
+                costChange = parallelizableEdges.get(0).getCost() * -1;
+                parallelizableEdges.get(0).parallelize();
+                costChange += parallelizableEdges.get(0).getCost();
+                reliabilityFactor *= parallelizableEdges.get(0).getReliability();
                 minCost.totalReliability *= reliabilityFactor;
                 minCost.totalCost += costChange;
                 
             } else {
-                edgeIndex++;
+                parallelizableEdges.remove(0);
             }
+            
+            sortReliabilityOverCost(parallelizableEdges);
         }
         return minCost;
     	
@@ -236,24 +241,27 @@ public class Algorithms {
         if (minCost.totalReliability >= reliabilityConstraint){
             return minCost;
         }
-        
-        minCost.printGraph();
-        int edgeIndex = 0;
-        // int remainingEdgeIndex = 0;
+        ArrayList<Edge> parallelizableEdges = new ArrayList<Edge>();
+        for (int i = 0; i < minCost.edges.size(); i++) {
+            parallelizableEdges.add(minCost.edges.get(i));
+        }
+
         double reliabilityFactor;
         double costChange;
-        sortReliabilityOverCost(minCost.edges);
-        while (minCost.totalReliability < reliabilityConstraint && edgeIndex < minCost.edges.size()) {
-            if (minCost.edges.get(edgeIndex).isParallelizable()) {
-                reliabilityFactor = 1 / minCost.edges.get(edgeIndex).getReliability();
-                costChange = minCost.edges.get(edgeIndex).getCost() * -1;
-                minCost.edges.get(edgeIndex).parallelize();
-                costChange += minCost.edges.get(edgeIndex).getCost();
-                reliabilityFactor *= minCost.edges.get(edgeIndex).getReliability();
+        sortReliabilityOverCost(parallelizableEdges);
+        while (minCost.totalReliability < reliabilityConstraint && !parallelizableEdges.isEmpty()) {
+            if (parallelizableEdges.get(0).isParallelizable()) {
+                reliabilityFactor = 1 / parallelizableEdges.get(0).getReliability();
+                costChange = parallelizableEdges.get(0).getCost() * -1;
+                parallelizableEdges.get(0).parallelize();
+                costChange += parallelizableEdges.get(0).getCost();
+                reliabilityFactor *= parallelizableEdges.get(0).getReliability();
                 minCost.totalReliability *= reliabilityFactor;
                 minCost.totalCost += costChange;
+                sortReliabilityOverCost(parallelizableEdges);
             } else {
-                edgeIndex++;
+                System.out.println("removing edge");
+                parallelizableEdges.remove(0);
             }
         }
         

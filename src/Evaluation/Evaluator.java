@@ -45,7 +45,7 @@ public class Evaluator {
 		//algorithms.prims(graph, true).printGraph();
 		System.out.println("reliability limit is " + relLimit);
 		//algorithms.constrainedMinCost(graph, relLimit).printGraph();
-		//algorithms.augmentToReliabilityConstraint(graph, relLimit).printGraph();
+		algorithms.augmentToReliabilityConstraint(graph, relLimit).printGraph();
 		algorithms.augmentToCostConstraint(graph, costLimit).printGraph();
 		System.out.println("done");
 	}
