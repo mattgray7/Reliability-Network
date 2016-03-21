@@ -88,7 +88,7 @@ public class Graph {
 	    }
 	    System.out.println("Edges:");
         for (int i = 0; i < edges.size(); i++) {
-            System.out.println("Edge from " + edges.get(i).getFrom().key + " to " + edges.get(i).getTo().key + " with cost " + edges.get(i).getCost() + " and reliability " + edges.get(i).getReliability());
+            System.out.println("Edge from " + edges.get(i).getFrom().key + " to " + edges.get(i).getTo().key + " with redundancy " + edges.get(i).getRedundancy() + " and cost " + edges.get(i).getCost() + " and reliability " + edges.get(i).getReliability());
         }
         System.out.println("Cost: " + totalCost);
         System.out.println("Reliability: " + totalReliability);

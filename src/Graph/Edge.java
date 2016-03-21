@@ -1,16 +1,31 @@
 package Graph;
 
 import Graph.Node;
+import java.util.*;
 
 public class Edge {
     private Node from;
     private Node to;
     private double cost;
     private double reliability;
+    private int redundancy;
     
     public Edge(Node from, Node to) {
         this.from = from;
         this.to = to;
+        this.redundancy = 1;
+    }
+    
+    public boolean isParallelizable() {
+        return redundancy < 3;
+    }
+    
+    public void parallelize() {
+        redundancy++;
+    }
+    
+    public int getRedundancy() {
+        return redundancy;
     }
     
     public void setCost(double cost){
@@ -18,15 +33,15 @@ public class Edge {
     }
     
     public double getCost(){
-    	return this.cost;
+    	return this.cost * this.redundancy;
     }
     
     public void setReliability(double reliability){
     	this.reliability = reliability;
     }
     
-    public double getReliability(){
-    	return this.reliability;
+    public double getReliability(){        
+        return 1 - Math.pow((1 - this.reliability), redundancy);
     }
     
     public Node getFrom() {
