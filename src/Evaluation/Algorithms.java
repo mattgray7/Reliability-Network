@@ -9,11 +9,11 @@ public class Algorithms {
         
     };
     
-    public void sortCostThenReliability(ArrayList<Edge> input) {
+    private void sortCostThenReliability(ArrayList<Edge> input) {
         quickSort(input, 0, input.size() - 1, true);
     }
     
-    public void sortReliabilityThenCost(ArrayList<Edge> input) {
+    private void sortReliabilityThenCost(ArrayList<Edge> input) {
         quickSort(input, 0, input.size() - 1, false);
     }
     
@@ -53,57 +53,110 @@ public class Algorithms {
         input.set(right, temp);
         return left;
     }
+    
+    public Graph constrainedMinCost(Graph input, double reliabilityConstraint) {
+        Graph cmst = new Graph();
+        boolean[] visited = new boolean[input.nodes.size()];
+        sortCostThenReliability(input.edges);
+        cmst.addNode(input.edges.get(0).getFrom());
+        visited[input.edges.get(0).getFrom().key] = true;
+        cmst = constrainedMinCostHelper(input.edges, cmst, visited, reliabilityConstraint);
+        return cmst;
+    }
+    
+    public Graph constrainedMinCostHelper(ArrayList<Edge> sortedSet, Graph current, boolean[] visited, double reliabilityConstraint) {
+        if (current == null) {
+            return null;
+        }
+
+        Graph currentWithEdge = new Graph(current);
+        if (allNodesReached(visited) && current.totalReliability >= reliabilityConstraint) {
+            current.setComplete(true);
+            return current;
+        }
+        
+        if (sortedSet.isEmpty() || current.totalReliability < reliabilityConstraint) {
+            return null;
+        }
+        
+        Edge nextEdge = sortedSet.remove(0);
+        ArrayList<Edge> sortedSetWithEdge = new ArrayList<Edge>();
+        for (int i = 0; i < sortedSet.size(); i++) {
+            sortedSetWithEdge.add(sortedSet.get(i));
+        }
+        boolean[] visitedWithEdge = new boolean[visited.length];
+        for (int i = 0; i < visited.length; i++) {
+            visitedWithEdge[i] = visited[i];
+        }
+
+        if (visitedWithEdge[nextEdge.getTo().key] != true) {
+            addEdgeAndNode(currentWithEdge, nextEdge.getTo(), nextEdge);
+            visitedWithEdge[nextEdge.getTo().key] = true;
+        } else if (visitedWithEdge[nextEdge.getFrom().key] != true) {
+            addEdgeAndNode(currentWithEdge, nextEdge.getFrom(), nextEdge);
+            visitedWithEdge[nextEdge.getFrom().key] = true;
+        }
+        
+        currentWithEdge = constrainedMinCostHelper(sortedSetWithEdge, currentWithEdge, visitedWithEdge, reliabilityConstraint);
+        current = constrainedMinCostHelper(sortedSet, current, visited, reliabilityConstraint);
+        
+        if (current != null && currentWithEdge != null) {
+            if (current.totalCost < currentWithEdge.totalCost) {
+                return current;
+            } else {
+                return currentWithEdge;
+            }
+        } else if (current != null) {
+            return current;
+        } else {
+            return currentWithEdge;
+        }
+    }
 
     public Graph prims(Graph input, boolean minCost) {
         boolean[] visited = new boolean[input.nodes.size()];
         Graph mst = new Graph();
-        input.remainingEdges = new ArrayList<Edge>(input.edges);
-        
-        if (minCost) {
-            sortCostThenReliability(input.edges);
-        } else {
-            sortReliabilityThenCost(input.edges);
+        ArrayList<Edge> sortedSet = new ArrayList<Edge>();
+        for (int i = 0; i < input.edges.size(); i++) {
+            sortedSet.add(input.edges.get(i));
         }
         
+        if (minCost) {
+            sortCostThenReliability(sortedSet);
+        } else {
+            sortReliabilityThenCost(sortedSet);
+        }
         mst.addNode(input.edges.get(0).getFrom());
         visited[input.edges.get(0).getFrom().key] = true;
         
         Edge nextEdge;
-        for (int i = 0; i < input.edges.size(); i++) {
-            nextEdge = input.edges.get(i);
-            if (visited[nextEdge.getTo().key] != true) {
-                addEdgeAndNode(mst, nextEdge.getTo(), nextEdge);
-                input.remainingEdges.remove(nextEdge);
-                visited[nextEdge.getTo().key] = true;
-
-                if (allNodesReached(visited)) {
+        while(mst.nodes.size() < input.nodes.size()) {
+            for (int i = 0; i < sortedSet.size(); i++) {
+                nextEdge = sortedSet.get(i);
+                if (visited[nextEdge.getFrom().key] && !visited[nextEdge.getTo().key]) {
+                    addEdgeAndNode(mst, nextEdge.getTo(), nextEdge);
+                    visited[nextEdge.getTo().key] = true;
+                    sortedSet.remove(i);
+                    break;
+                } else if (visited[nextEdge.getTo().key] && !visited[nextEdge.getFrom().key]) {
+                    addEdgeAndNode(mst, nextEdge.getFrom(), nextEdge);
+                    visited[nextEdge.getFrom().key] = true;
+                    sortedSet.remove(i);
                     break;
                 }
-                continue;
-            } else if (visited[nextEdge.getFrom().key] != true){
-                addEdgeAndNode(mst, nextEdge.getFrom(), nextEdge);
-                input.remainingEdges.remove(nextEdge);
-                visited[nextEdge.getFrom().key] = true;
-
-                if (allNodesReached(visited)) {
-                    break;
-                }
-                continue;
             }
+            
         }
+        mst.complete = true;
         return mst;
     }
     
-    public void addEdgeAndNode(Graph graph, Node node, Edge edge) {
+    private void addEdgeAndNode(Graph graph, Node node, Edge edge) {
         graph.addEdge(edge);
         graph.addNode(node);
     }
     
-    public Graph primsMaxReliability(Graph input) {
-        return input;
-    }
-    
-    public boolean allNodesReached(boolean[] visited) {
+    private boolean allNodesReached(boolean[] visited) {
         for (int i = 0; i < visited.length; i++) {
             if (visited[i] == false) {
                 return false; 

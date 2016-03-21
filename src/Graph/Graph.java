@@ -9,6 +9,7 @@ public class Graph {
 	public double totalCost;
 	public double totalReliability;
 	public ArrayList<Edge> remainingEdges;
+	public boolean complete;
 	
 	public Graph() {
 	    this.nodes = new ArrayList<Node>();
@@ -16,6 +17,25 @@ public class Graph {
 	    this.remainingEdges = new ArrayList<Edge>();
 	    this.totalCost = 0;
 	    this.totalReliability = 1.0;
+	    this.complete = false;
+	}
+	
+	public Graph(Graph graph) {
+	    this.nodes = new ArrayList<Node>();
+        this.edges = new ArrayList<Edge>();
+        this.remainingEdges = new ArrayList<Edge>();
+        for (int i = 0; i < graph.nodes.size(); i++) {
+            this.nodes.add(graph.nodes.get(i));
+        }
+        for (int i = 0; i < graph.edges.size(); i++) {
+            this.edges.add(graph.edges.get(i));
+        }
+        for (int i = 0; i < graph.remainingEdges.size(); i++) {
+            this.remainingEdges.add(graph.remainingEdges.get(i));
+        }
+        this.totalCost = graph.totalCost;
+        this.totalReliability = graph.totalReliability;
+        this.complete = graph.complete;
 	}
 
 	public void createGraph(int size, double[][] costMatrix, double[][]relMatrix){
@@ -39,12 +59,16 @@ public class Graph {
 				newEdge.setFrom(this.nodes.get(row));
 				newEdge.setTo(this.nodes.get(col));
 				edges.add(newEdge);
-				System.out.println("Adding edge from node" + row + " to node" + col + " with R=" + relMatrix[row][col] + " and C=" + costMatrix[row][col]);
+//				System.out.println("Adding edge from node" + row + " to node" + col + " with R=" + relMatrix[row][col] + " and C=" + costMatrix[row][col]);
 				col++;
 			}
 			row++;
 			col = row;
 		}
+	}
+	
+	public void setComplete(boolean complete) {
+	    this.complete = complete;
 	}
 	
 	public void addNode(Node newNode) {
@@ -68,6 +92,11 @@ public class Graph {
         }
         System.out.println("Cost: " + totalCost);
         System.out.println("Reliability: " + totalReliability);
+        System.out.println("Complete: " + complete);
+	}
+	
+	public void setCost(double cost) {
+	    this.totalCost = cost;
 	}
 
 	/*public void createGraph(){

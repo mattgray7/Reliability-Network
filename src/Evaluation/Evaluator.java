@@ -14,7 +14,7 @@ public class Evaluator {
 	public static int problemType;
 	public static double relLimit;
 	public static int costLimit;
-	public static String INPUT_FILE = "test_input.txt"; //"Prj1_input.txt";
+	public static String INPUT_FILE = "test_input.txt";// "Prj1_input.txt";
 	public static Graph graph;
 
 	public static void main(String[] args) {
@@ -27,8 +27,12 @@ public class Evaluator {
 		graph = new Graph();
 		graph.createGraph(N, costMatrix, relMatrix);
 		Algorithms algorithms = new Algorithms();
-		boolean minCost = false;
+		boolean minCost = true;
 		algorithms.prims(graph, minCost).printGraph();
+		algorithms.prims(graph, !minCost).printGraph();
+		System.out.println("reliability limit is " + relLimit);
+		algorithms.constrainedMinCost(graph, relLimit).printGraph();
+		System.out.println("done");
 	}
 	
 	public static void loadInputFile() throws IOException{
@@ -62,12 +66,12 @@ public class Evaluator {
 				N = Integer.parseInt(lineValue);
 			}else if(currentPrefix.equals("C=")){
 				costMatrix = convertListToMatrix(lineValue, currentPrefix);
-				System.out.println("\nCost matrix: ");
-				printMatrix(costMatrix);
+//				System.out.println("\nCost matrix: ");
+//				printMatrix(costMatrix);
 			}else if(currentPrefix.equals("R=")){
 				relMatrix = convertListToMatrix(lineValue, currentPrefix);
-				System.out.println("\nReliability matrix: ");
-				printMatrix(relMatrix);
+//				System.out.println("\nReliability matrix: ");
+//				printMatrix(relMatrix);
 			}else if(currentPrefix.equals("a_b=")){
 				problemType = Integer.parseInt(lineValue);
 			}else if(currentPrefix.equals("Req_Reliability=")){
@@ -115,9 +119,9 @@ public class Evaluator {
 	public static void printMatrix(double[][] mat){
 		for(int i=0; i < mat.length; i++){
 			for (int j=0; j < mat[0].length; j++){
-				System.out.print(mat[i][j] + " ");
+//				System.out.print(mat[i][j] + " ");
 			}
-			System.out.print("\n");
+//			System.out.print("\n");
 		}
 	}
 }
