@@ -87,7 +87,7 @@ public class Algorithms {
         input.set(right, temp);
         return left;
     }
-    
+    /*
     public Graph constrainedMinCost(Graph input, double reliabilityConstraint) {
         Graph cmst = new Graph();
         boolean[] visited = new boolean[input.nodes.size()];
@@ -159,7 +159,7 @@ public class Algorithms {
         } else {
             return currentWithEdge;
         }
-    }
+    }*/
 
     public Graph prims(Graph input, boolean minCost) {
         boolean[] visited = new boolean[input.nodes.size()];
@@ -168,11 +168,12 @@ public class Algorithms {
             mst.remainingEdges.add(input.edges.get(i));
         }
         
-        if (minCost) {
+        sortCostThenReliability(mst.remainingEdges);
+        /*if (minCost) {
             sortCostThenReliability(mst.remainingEdges);
         } else {
             sortReliabilityThenCost(mst.remainingEdges);
-        }
+        }*/
         mst.addNode(input.edges.get(0).getFrom());
         visited[input.edges.get(0).getFrom().key] = true;
         
@@ -198,13 +199,44 @@ public class Algorithms {
         return mst;
     }
     
+    public Graph augmentToCostConstraint(Graph input, double costConstraint){
+    	Graph minCost = prims(input, true);
+        if (minCost.totalReliability > costConstraint){
+        	System.out.println("Min cost tree is over cost limit");
+            return minCost;
+        }
+        
+        minCost.printGraph();
+        int edgeIndex = 0;
+        // int remainingEdgeIndex = 0;
+        double reliabilityFactor;
+        double costChange;
+        sortReliabilityOverCost(minCost.edges);
+        while (edgeIndex < minCost.edges.size()) {
+            if ((minCost.edges.get(edgeIndex).isParallelizable()) && 
+            	((minCost.totalCost + minCost.edges.get(edgeIndex).getCost()) <= costConstraint)) {
+                reliabilityFactor = 1 / minCost.edges.get(edgeIndex).getReliability();
+                costChange = minCost.edges.get(edgeIndex).getCost() * -1;
+                minCost.edges.get(edgeIndex).parallelize();
+                costChange += minCost.edges.get(edgeIndex).getCost();
+                reliabilityFactor *= minCost.edges.get(edgeIndex).getReliability();
+                minCost.totalReliability *= reliabilityFactor;
+                minCost.totalCost += costChange;
+                
+            } else {
+                edgeIndex++;
+            }
+        }
+        return minCost;
+    	
+    }
+    
     public Graph augmentToReliabilityConstraint(Graph input, double reliabilityConstraint) {
         Graph minCost = prims(input, true);
         if (minCost.totalReliability >= reliabilityConstraint){
             return minCost;
         }
         
-        sortReliabilityThenCost(minCost.edges);
         minCost.printGraph();
         int edgeIndex = 0;
         // int remainingEdgeIndex = 0;
