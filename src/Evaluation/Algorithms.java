@@ -19,6 +19,38 @@ public class Algorithms {
         quickSort(input, 0, input.size() - 1, false);
     }
     
+    private void sortReliabilityOverCost(ArrayList<Edge> input) {
+        quickSort(input, 0, input.size() - 1);
+    }
+    
+    private void quickSort(ArrayList<Edge> input, int left, int right) {
+        int p;
+        if (left < right) {
+            p = partition(input, left, right);
+            quickSort(input, left, p - 1);
+            quickSort(input, p + 1, right);
+        }
+    }
+    
+    private int partition(ArrayList<Edge> input, int left, int right) {
+        Edge pivot = input.get(right);
+        Edge temp;
+        
+        for (int i = left; i < right; i++) {
+            if ((1 - input.get(i).getReliability())/input.get(i).getCost() > (1 - pivot.getReliability())/pivot.getCost()) {
+                temp = input.get(i);
+                input.set(i, input.get(left));
+                input.set(left, temp);
+                left++;
+            }
+        }
+        
+        temp = input.get(left);
+        input.set(left, input.get(right));
+        input.set(right, temp);
+        return left;
+    }
+    
     private void quickSort(ArrayList<Edge> input, int left, int right, boolean costFirst) {
         int p;
         if (left < right) {
@@ -167,17 +199,33 @@ public class Algorithms {
     }
     
     public Graph augmentToReliabilityConstraint(Graph input, double reliabilityConstraint) {
-        Graph maxReliability = prims(input, false);
         Graph minCost = prims(input, true);
-        if (maxReliability.totalReliability < reliabilityConstraint) {
-            return maxReliability;
-        } else if (minCost.totalReliability > reliabilityConstraint){
+        if (minCost.totalReliability >= reliabilityConstraint){
             return minCost;
         }
         
+        sortReliabilityThenCost(minCost.edges);
+        minCost.printGraph();
+        int edgeIndex = 0;
+        // int remainingEdgeIndex = 0;
+        double reliabilityFactor;
+        double costChange;
+        sortReliabilityOverCost(minCost.edges);
+        while (minCost.totalReliability < reliabilityConstraint && edgeIndex < minCost.edges.size()) {
+            if (minCost.edges.get(edgeIndex).isParallelizable()) {
+                reliabilityFactor = 1 / minCost.edges.get(edgeIndex).getReliability();
+                costChange = minCost.edges.get(edgeIndex).getCost() * -1;
+                minCost.edges.get(edgeIndex).parallelize();
+                costChange += minCost.edges.get(edgeIndex).getCost();
+                reliabilityFactor *= minCost.edges.get(edgeIndex).getReliability();
+                minCost.totalReliability *= reliabilityFactor;
+                minCost.totalCost += costChange;
+            } else {
+                edgeIndex++;
+            }
+        }
         
-        
-        return input;
+        return minCost;
     }
     
     private void addEdgeAndNode(Graph graph, Node node, Edge edge) {
