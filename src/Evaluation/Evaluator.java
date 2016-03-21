@@ -27,12 +27,25 @@ public class Evaluator {
 		graph = new Graph();
 		graph.createGraph(N, costMatrix, relMatrix);
 		Algorithms algorithms = new Algorithms();
-		boolean minCost = true;
-		algorithms.prims(graph, minCost).printGraph();
+		if(problemType == 0){
+			//meet reliability limit
+			System.out.println("Creating network with reliability > " + relLimit);
+			Graph primGraph = algorithms.prims(graph, false);
+			System.out.println("\nPrim graph before augmentation: ");
+			primGraph.printGraph();
+		}else{
+			//meet cost limit
+			System.out.println("Creating network with cost < " + costLimit);
+			Graph primGraph = algorithms.prims(graph, true);
+			System.out.println("\nPrim graph before augmentation: ");
+			primGraph.printGraph();
+		}
+		
+		/*
 		algorithms.prims(graph, !minCost).printGraph();
 		System.out.println("reliability limit is " + relLimit);
 		algorithms.constrainedMinCost(graph, relLimit).printGraph();
-		System.out.println("done");
+		System.out.println("done");*/
 	}
 	
 	public static void loadInputFile() throws IOException{
