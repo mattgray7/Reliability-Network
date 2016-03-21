@@ -14,7 +14,7 @@ public class Evaluator {
 	public static int problemType;
 	public static double relLimit;
 	public static int costLimit;
-	public static String INPUT_FILE = "Prj1_input.txt";//"test_input.txt";sd
+	public static String INPUT_FILE = "Prj1_input.txt";//"test_input.txt";
 	public static Graph graph;
 
 	public static void main(String[] args) {
