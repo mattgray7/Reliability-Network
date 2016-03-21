@@ -4,6 +4,8 @@ import Graph.*;
 import java.util.*;
 
 public class Algorithms {
+    private double upperCostBound;
+    private double minEdgeCost;
     
     public Algorithms(){
         
@@ -60,6 +62,9 @@ public class Algorithms {
         sortCostThenReliability(input.edges);
         cmst.addNode(input.edges.get(0).getFrom());
         visited[input.edges.get(0).getFrom().key] = true;
+        upperCostBound = prims(input, false).totalCost;
+        minEdgeCost = input.edges.get(0).getCost();
+        System.out.println(upperCostBound);
         cmst = constrainedMinCostHelper(input.edges, cmst, visited, reliabilityConstraint);
         return cmst;
     }
@@ -72,12 +77,23 @@ public class Algorithms {
         Graph currentWithEdge = new Graph(current);
         if (allNodesReached(visited) && current.totalReliability >= reliabilityConstraint) {
             current.setComplete(true);
+            System.out.println("found solution");
+            upperCostBound = current.totalCost;
+            // current.printGraph();
             return current;
         }
-        
         if (sortedSet.isEmpty() || current.totalReliability < reliabilityConstraint) {
             return null;
         }
+        if (current.totalCost + (visited.length - current.nodes.size())*sortedSet.get(0).getCost() >= upperCostBound) {
+            System.out.println("no longer possible solution");
+            return null;
+        }
+//        System.out.println();
+//        for (int i = sortedSet.size() - 1; i >= 0; i--) {
+//            System.out.print(sortedSet.get(i).getFrom().key + " " + sortedSet.get(i).getTo().key);
+//        }
+//        System.out.println();
         
         Edge nextEdge = sortedSet.remove(0);
         ArrayList<Edge> sortedSetWithEdge = new ArrayList<Edge>();
@@ -116,32 +132,31 @@ public class Algorithms {
     public Graph prims(Graph input, boolean minCost) {
         boolean[] visited = new boolean[input.nodes.size()];
         Graph mst = new Graph();
-        ArrayList<Edge> sortedSet = new ArrayList<Edge>();
         for (int i = 0; i < input.edges.size(); i++) {
-            sortedSet.add(input.edges.get(i));
+            mst.remainingEdges.add(input.edges.get(i));
         }
         
         if (minCost) {
-            sortCostThenReliability(sortedSet);
+            sortCostThenReliability(mst.remainingEdges);
         } else {
-            sortReliabilityThenCost(sortedSet);
+            sortReliabilityThenCost(mst.remainingEdges);
         }
         mst.addNode(input.edges.get(0).getFrom());
         visited[input.edges.get(0).getFrom().key] = true;
         
         Edge nextEdge;
         while(mst.nodes.size() < input.nodes.size()) {
-            for (int i = 0; i < sortedSet.size(); i++) {
-                nextEdge = sortedSet.get(i);
+            for (int i = 0; i < mst.remainingEdges.size(); i++) {
+                nextEdge = mst.remainingEdges.get(i);
                 if (visited[nextEdge.getFrom().key] && !visited[nextEdge.getTo().key]) {
                     addEdgeAndNode(mst, nextEdge.getTo(), nextEdge);
                     visited[nextEdge.getTo().key] = true;
-                    sortedSet.remove(i);
+                    mst.remainingEdges.remove(i);
                     break;
                 } else if (visited[nextEdge.getTo().key] && !visited[nextEdge.getFrom().key]) {
                     addEdgeAndNode(mst, nextEdge.getFrom(), nextEdge);
                     visited[nextEdge.getFrom().key] = true;
-                    sortedSet.remove(i);
+                    mst.remainingEdges.remove(i);
                     break;
                 }
             }
@@ -149,6 +164,20 @@ public class Algorithms {
         }
         mst.complete = true;
         return mst;
+    }
+    
+    public Graph augmentToReliabilityConstraint(Graph input, double reliabilityConstraint) {
+        Graph maxReliability = prims(input, false);
+        Graph minCost = prims(input, true);
+        if (maxReliability.totalReliability < reliabilityConstraint) {
+            return maxReliability;
+        } else if (minCost.totalReliability > reliabilityConstraint){
+            return minCost;
+        }
+        
+        
+        
+        return input;
     }
     
     private void addEdgeAndNode(Graph graph, Node node, Edge edge) {
