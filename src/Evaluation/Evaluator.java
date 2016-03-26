@@ -17,46 +17,49 @@ public class Evaluator {
 	public static String INPUT_FILE = "Prj1_input.txt";//"test_input.txt";
 	public static Graph graph;
 
+	/**
+	 * Entrance to program, loads input file and calls necessary functions
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		try{
+			//set the class variables based on the text file
 			loadInputFile();
 		}catch(Exception e){
 			System.out.println(e);
+			System.out.println("File could not be loaded. Exiting...");
+			return;
 		}
 		
 		graph = new Graph();
 		graph.createGraph(N, costMatrix, relMatrix);
 		Algorithms algorithms = new Algorithms();
-//		if(problemType == 0){
-//			//meet reliability limit
-//			System.out.println("Creating network with reliability > " + relLimit);
-//			Graph primGraph = algorithms.prims(graph, false);
-//			System.out.println("\nPrim graph before augmentation: ");
-//			primGraph.printGraph();
-//		}else{
-//			//meet cost limit
-//			System.out.println("Creating network with cost < " + costLimit);
-//			Graph primGraph = algorithms.prims(graph, true);
-//			System.out.println("\nPrim graph before augmentation: ");
-//			primGraph.printGraph();
-//		}
 		
-		
-		//algorithms.prims(graph, true).printGraph();
-		System.out.println("reliability limit is " + relLimit);
-		//algorithms.constrainedMinCost(graph, relLimit).printGraph();
-		algorithms.augmentToReliabilityConstraint(graph, relLimit).printGraph();
-		algorithms.augmentToCostConstraint(graph, costLimit).printGraph();
-		System.out.println("done");
+		if(problemType == 0){
+			System.out.println("Problem a: Create graph with reliability >= " + relLimit);
+			algorithms.augmentToReliabilityConstraint(graph, relLimit).printGraph();
+		}else if(problemType == 1){
+			System.out.println("Problem b: Create graph with cost <= " + costLimit);
+			//algorithms.augmentToReliabilityConstraint(graph, relLimit).printGraph();
+			algorithms.augmentToCostConstraint(graph, costLimit).printGraph();
+		}
+		//algorithms.augmentToReliabilityConstraint(graph, relLimit).printGraph();
+		//algorithms.augmentToCostConstraint(graph, costLimit).printGraph();
 	}
 	
+	/**
+	 * Parses the input text file and sets the class variables.
+	 * @throws IOException
+	 */
 	public static void loadInputFile() throws IOException{
 		FileReader input = new FileReader(INPUT_FILE);
 		BufferedReader bufRead = new BufferedReader(input);
 		String curLine = null;
 		String[] linePrefixes = {"N=", "C=", "R=", "a_b=", "Req_Reliability=", "Req_Cost="};
 		
+		//parse line by line
 		while((curLine = bufRead.readLine()) != null){
+			//remove whitespace for to simplify parsing
 			curLine = curLine.replace(" ", "");
 			String currentPrefix = "";
 			Boolean validLine = false;
@@ -65,6 +68,7 @@ public class Evaluator {
 				continue;
 			}
 			
+			//parse the specified prefixes to see if line patches
 			for(int i=0; i < linePrefixes.length; i++){
 				currentPrefix = linePrefixes[i];
 				if((curLine.toLowerCase().contains(currentPrefix.toLowerCase())) && 
@@ -75,45 +79,49 @@ public class Evaluator {
 			}
 			if((!validLine) || (currentPrefix.equals(""))) continue;
 			
+			//remove the prefix once it is known
 			String lineValue = curLine.replace(currentPrefix, "");
-						
+			
+			//set the variable based on the prefix
 			if(currentPrefix.equals("N=")){
 				N = Integer.parseInt(lineValue);
 			}else if(currentPrefix.equals("C=")){
 				costMatrix = convertListToMatrix(lineValue, currentPrefix);
-//				System.out.println("\nCost matrix: ");
-//				printMatrix(costMatrix);
 			}else if(currentPrefix.equals("R=")){
 				relMatrix = convertListToMatrix(lineValue, currentPrefix);
-//				System.out.println("\nReliability matrix: ");
-//				printMatrix(relMatrix);
 			}else if(currentPrefix.equals("a_b=")){
 				problemType = Integer.parseInt(lineValue);
 			}else if(currentPrefix.equals("Req_Reliability=")){
 				relLimit = Double.parseDouble(lineValue);
-				//costLimit = 0;
 			}else if(currentPrefix.equals("Req_Cost=")){
 				costLimit = Integer.parseInt(lineValue);
-				//relLimit = 0;
 			}
 		}
 	}
 	
+	/**
+	 * Converts the single list to a 2D matrix based on the N class variable
+	 * @param input: The input list
+	 * @param prefix: The prefix used to determine on the diag
+	 * @return
+	 */
 	public static double[][] convertListToMatrix(String input, String prefix){
 		double diagValue;
 		if(prefix.equals("C=")){
 			diagValue = Double.POSITIVE_INFINITY;
 		}else{
-			//diagonal for reliability should be 1
 			diagValue = 1.0;
 		}
 		
+		//split values into java list
 		input = input.replace("[", "").replace("]", "");
 		String[] inputList = input.split(",");
 		double[][] retMatrix = new double[N][N];
 		int row = 0;
 		int col = 0;
 		int listIndex = 0;
+		
+		//set values into 2d matrix
 		while(row < N){
 			//set the diagonal
 			retMatrix[row][col] = diagValue;
@@ -131,12 +139,16 @@ public class Evaluator {
 		return retMatrix;
 	}
 	
+	/**
+	 * Prints the input matrix with user friendly format
+	 * @param mat: The 2D matrix to print
+	 */
 	public static void printMatrix(double[][] mat){
 		for(int i=0; i < mat.length; i++){
 			for (int j=0; j < mat[0].length; j++){
-//				System.out.print(mat[i][j] + " ");
+				System.out.print(mat[i][j] + " ");
 			}
-//			System.out.print("\n");
+			System.out.print("\n");
 		}
 	}
 }
