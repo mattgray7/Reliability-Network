@@ -40,11 +40,8 @@ public class Evaluator {
 			algorithms.augmentToReliabilityConstraint(graph, relLimit).printGraph();
 		}else if(problemType == 1){
 			System.out.println("Problem b: Create graph with cost <= " + costLimit);
-			algorithms.augmentToReliabilityConstraint(graph, relLimit).printGraph();
 			algorithms.augmentToCostConstraint(graph, costLimit).printGraph();
 		}
-		//algorithms.augmentToReliabilityConstraint(graph, relLimit).printGraph();
-		//algorithms.augmentToCostConstraint(graph, costLimit).printGraph();
 	}
 	
 	/**
