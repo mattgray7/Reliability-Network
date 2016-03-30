@@ -107,5 +107,23 @@ public class Graph {
         System.out.println("Reliability: " + totalReliability);
 	}
 	
+	public void printGraphMatrix(){
+		int[][] graphToPrint = new int[this.nodes.size()][this.nodes.size()];
+		for(int i=0; i < this.edges.size(); i++){
+			int toNode = this.edges.get(i).getTo().key;
+			int fromNode = this.edges.get(i).getFrom().key;
+			graphToPrint[toNode][toNode] = 0;
+			graphToPrint[toNode][fromNode] = this.edges.get(i).getRedundancy();
+			graphToPrint[fromNode][toNode] = this.edges.get(i).getRedundancy();
+		}
+		
+		for(int j=0; j < graphToPrint.length; j++){
+			for(int k=0; k < graphToPrint[0].length; k++){
+				System.out.print(graphToPrint[j][k] + " ");
+			}
+			System.out.print("\n");
+		}
+	}
+	
 
 }
