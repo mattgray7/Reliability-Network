@@ -110,8 +110,8 @@ public class Graph {
 	public void printGraphMatrix(){
 		int[][] graphToPrint = new int[this.nodes.size()][this.nodes.size()];
 		for(int i=0; i < this.edges.size(); i++){
-			int toNode = this.edges.get(i).getTo().key;
-			int fromNode = this.edges.get(i).getFrom().key;
+			int toNode = this.edges.get(i).getTo().getKey();
+			int fromNode = this.edges.get(i).getFrom().getKey();
 			graphToPrint[toNode][toNode] = 0;
 			graphToPrint[toNode][fromNode] = this.edges.get(i).getRedundancy();
 			graphToPrint[fromNode][toNode] = this.edges.get(i).getRedundancy();
