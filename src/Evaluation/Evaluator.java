@@ -35,13 +35,17 @@ public class Evaluator {
 		graph.createGraph(N, costMatrix, relMatrix);
 		Algorithms algorithms = new Algorithms();
 		
+		Graph finalGraph;
 		if(problemType == 0){
 			System.out.println("Problem a: Create graph with reliability >= " + relLimit);
-			algorithms.augmentToReliabilityConstraint(graph, relLimit).printGraph();
-		}else if(problemType == 1){
+			finalGraph = algorithms.augmentToReliabilityConstraint(graph, relLimit);
+		}else{
 			System.out.println("Problem b: Create graph with cost <= " + costLimit);
-			algorithms.augmentToCostConstraint(graph, costLimit).printGraph();
+			finalGraph = algorithms.augmentToCostConstraint(graph, costLimit);
 		}
+		
+		finalGraph.printGraph();
+		finalGraph.printGraphMatrix();
 	}
 	
 	/**
