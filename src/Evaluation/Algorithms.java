@@ -33,7 +33,7 @@ public class Algorithms {
         Edge temp;
         
         for (int i = left; i < right; i++) {
-            if ((1 - input.get(i).getReliability())/input.get(i).getCost() > (1 - pivot.getReliability())/pivot.getCost()) {
+            if ((input.get(i).getReliabilityChange() - 1)/input.get(i).getOriginalCost() > (pivot.getReliabilityChange() - 1)/pivot.getOriginalCost()) {
                 temp = input.get(i);
                 input.set(i, input.get(left));
                 input.set(left, temp);
@@ -83,7 +83,28 @@ public class Algorithms {
         input.set(right, temp);
         return left;
     }
+    
+    private void insertFirstEdge(ArrayList<Edge> edges) {
+        Edge temp = edges.get(0);
+        int index = 1;
+        while (index < edges.size()) {
+            if ((temp.getReliabilityChange() - 1)/temp.getOriginalCost() < (edges.get(index).getReliabilityChange() - 1)/edges.get(index).getOriginalCost()) {
+                edges.set(index - 1, edges.get(index));
+            } else {
+                edges.set(index - 1, temp);
+                return;
+            }
+            index++;
+        }
+        edges.set(index - 1, temp);
+    }
 
+    private void printEdges(ArrayList<Edge> edges) {
+        for (int i = 0; i < edges.size(); i++) {
+            System.out.println("Edge from " + edges.get(i).getFrom().key + " to " + edges.get(i).getTo().key + " with redundancy " + edges.get(i).getRedundancy() + " and cost " + edges.get(i).getCost() + " and reliability " + edges.get(i).getReliability() + " and ratio of " + (edges.get(i).getReliabilityChange() - 1)/edges.get(i).getOriginalCost());
+        }
+        System.out.println();
+    }
     public Graph prims(Graph input, boolean minCost) {
         boolean[] visited = new boolean[input.nodes.size()];
         Graph mst = new Graph();
@@ -131,7 +152,7 @@ public class Algorithms {
         
         double reliabilityFactor;
         double costChange;
-        sortReliabilityOverCost(minCost.edges);
+        sortReliabilityOverCost(parallelizableEdges);
         while (!parallelizableEdges.isEmpty()) {
             if ((parallelizableEdges.get(0).isParallelizable()) && 
             	((minCost.totalCost + parallelizableEdges.get(0).getOriginalCost()) <= costConstraint)) {
@@ -142,12 +163,10 @@ public class Algorithms {
                 reliabilityFactor *= parallelizableEdges.get(0).getReliability();
                 minCost.totalReliability *= reliabilityFactor;
                 minCost.totalCost += costChange;
-                
+                insertFirstEdge(parallelizableEdges);
             } else {
                 parallelizableEdges.remove(0);
             }
-            
-            sortReliabilityOverCost(parallelizableEdges);
         }
         return minCost;
     	
@@ -175,9 +194,8 @@ public class Algorithms {
                 reliabilityFactor *= parallelizableEdges.get(0).getReliability();
                 minCost.totalReliability *= reliabilityFactor;
                 minCost.totalCost += costChange;
-                sortReliabilityOverCost(parallelizableEdges);
+                insertFirstEdge(parallelizableEdges);
             } else {
-                System.out.println("removing edge");
                 parallelizableEdges.remove(0);
             }
         }

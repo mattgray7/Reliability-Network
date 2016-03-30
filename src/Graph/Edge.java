@@ -45,7 +45,11 @@ public class Edge {
     }
     
     public double getReliability(){        
-        return 1 - Math.pow((1 - this.reliability), redundancy);
+        return 1 - Math.pow((1 - this.reliability), this.redundancy);
+    }
+    
+    public double getReliabilityChange() {
+        return ((1 - Math.pow((1 - this.reliability), this.redundancy + 1))/(1 - Math.pow((1 - this.reliability), this.redundancy)));
     }
     
     public Node getFrom() {
