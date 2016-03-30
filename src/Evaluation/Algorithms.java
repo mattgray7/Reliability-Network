@@ -217,7 +217,7 @@ public class Algorithms {
         sortReliabilityOverCost(minCost.edges);
         while (!parallelizableEdges.isEmpty()) {
             if ((parallelizableEdges.get(0).isParallelizable()) && 
-            	((minCost.totalCost + parallelizableEdges.get(0).getCost()) <= costConstraint)) {
+            	((minCost.totalCost + parallelizableEdges.get(0).getOriginalCost()) <= costConstraint)) {
                 reliabilityFactor = 1 / parallelizableEdges.get(0).getReliability();
                 costChange = parallelizableEdges.get(0).getCost() * -1;
                 parallelizableEdges.get(0).parallelize();

@@ -36,6 +36,10 @@ public class Edge {
     	return this.cost * this.redundancy;
     }
     
+    public double getOriginalCost() {
+        return this.cost;
+    }
+    
     public void setReliability(double reliability){
     	this.reliability = reliability;
     }
