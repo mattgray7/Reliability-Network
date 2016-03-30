@@ -48,8 +48,8 @@ public class Edge {
         return 1 - Math.pow((1 - this.reliability), this.redundancy);
     }
     
-    public double getOriginalReliability(){
-    	return this.reliability;
+    public double getRCRatio(){
+    	return reliability/cost;
     }
     
     public double getReliabilityChange() {
@@ -70,25 +70,5 @@ public class Edge {
 
     public void setTo(Node to) {
         this.to = to;
-    }
-    
-    public double get2ParallelCost(){
-    	return 2*cost;
-    }
-    
-    public double get3ParallelCost(){
-    	return 3*cost;
-    }
-    
-    public double get2ParallelReliability(){
-    	return (1-((1-reliability)*(1-reliability)));
-    }
-    
-    public double get3ParallelReliability(){
-    	return (1-((1-reliability)*(1-reliability)*(1-reliability)));
-    }
-    
-    public double getRCRatio(){
-    	return reliability/cost;
     }
 }

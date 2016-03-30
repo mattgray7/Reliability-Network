@@ -80,24 +80,19 @@ public class Graph {
 		}
 	}
 	
-	public void setComplete(boolean complete) {
-	    this.complete = complete;
-	}
-	
-	public void addNode(Node newNode) {
-	    nodes.add(newNode);
-	}
-	
+	/**
+	 * Adds an edge to the class and modified the graph's total cost and reliability
+	 * @param newEdge: The edge to add
+	 */
 	public void addEdge(Edge newEdge) {
 	    edges.add(newEdge);
 	    totalCost += newEdge.getCost();
 	    totalReliability *= newEdge.getReliability();
 	}
 	
-	public void setCost(double cost) {
-	    this.totalCost = cost;
-	}
-	
+	/**
+	 * Prints out each edge in the graph with the redundancy, total cost, and total reliability
+	 */
 	public void printGraph() {
 	    System.out.println("Edges:");
         for (int i = 0; i < edges.size(); i++) {
@@ -107,11 +102,16 @@ public class Graph {
         System.out.println("Reliability: " + totalReliability);
 	}
 	
+	/**
+	 * Prints out the matrix showing graph connections and redundancies in the graph
+	 */
 	public void printGraphMatrix(){
 		int[][] graphToPrint = new int[this.nodes.size()][this.nodes.size()];
 		for(int i=0; i < this.edges.size(); i++){
 			int toNode = this.edges.get(i).getTo().getKey();
 			int fromNode = this.edges.get(i).getFrom().getKey();
+			
+			//ensure that diagonals are 0
 			graphToPrint[toNode][toNode] = 0;
 			graphToPrint[toNode][fromNode] = this.edges.get(i).getRedundancy();
 			graphToPrint[fromNode][toNode] = this.edges.get(i).getRedundancy();
@@ -125,5 +125,15 @@ public class Graph {
 		}
 	}
 	
-
+	public void setComplete(boolean complete) {
+	    this.complete = complete;
+	}
+	
+	public void addNode(Node newNode) {
+	    nodes.add(newNode);
+	}
+	
+	public void setCost(double cost) {
+	    this.totalCost = cost;
+	}
 }

@@ -4,7 +4,6 @@ import Graph.Graph;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 
 public class Evaluator {
 	
@@ -38,10 +37,10 @@ public class Evaluator {
 		Graph finalGraph;
 		if(problemType == 0){
 			System.out.println("Problem a: Create graph with reliability >= " + relLimit);
-			finalGraph = algorithms.augmentToReliabilityConstraint(graph, relLimit);
+			finalGraph = algorithms.buildGraphForReliabilityConstraint(graph, relLimit);
 		}else{
 			System.out.println("Problem b: Create graph with cost <= " + costLimit);
-			finalGraph = algorithms.augmentToCostConstraint(graph, costLimit);
+			finalGraph = algorithms.buildGraphForCostConstraint(graph, costLimit);
 		}
 		
 		finalGraph.printGraph();
