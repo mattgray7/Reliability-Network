@@ -48,6 +48,10 @@ public class Edge {
         return 1 - Math.pow((1 - this.reliability), this.redundancy);
     }
     
+    public double getOriginalReliability(){
+    	return this.reliability;
+    }
+    
     public double getReliabilityChange() {
         return ((1 - Math.pow((1 - this.reliability), this.redundancy + 1))/(1 - Math.pow((1 - this.reliability), this.redundancy)));
     }
